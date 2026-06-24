@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Training Management Portal — Developer Documentation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --sidebar-width: 280px;
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #6366f1;
+      --success: #10b981;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: var(--sidebar-width);
+      height: 100vh;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      color: #e2e8f0;
+      overflow-y: auto;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+    .sidebar-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .sidebar-header h1 {
+      font-size: 1.1rem;
+      color: #fff;
+      font-weight: 700;
+    }
+    .sidebar-header p {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin-top: 0.25rem;
+    }
+    .nav-list { list-style: none; padding: 0.75rem 0; }
+    .nav-list a {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 1.5rem;
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 0.875rem;
+      border-left: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    .nav-list a:hover, .nav-list a.active {
+      background: rgba(99,102,241,0.15);
+      color: #fff;
+      border-left-color: var(--accent);
+    }
+    .nav-list i { width: 18px; text-align: center; opacity: 0.8; }
+    .menu-toggle {
+      position: fixed;
+      top: 1rem; left: 1rem;
+      z-index: 200;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: none;
+    }
+    .main {
+      margin-left: var(--sidebar-width);
+      padding: 2rem 2.5rem;
+      max-width: 1100px;
+    }
+    .hero {
+      background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+      color: #fff;
+      padding: 2.5rem;
+      border-radius: 16px;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+    }
+    .hero h2 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+    .hero p { opacity: 0.9; font-size: 1rem; }
+    section {
+      background: var(--surface);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      background: #f1f5f9;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+    }
+    .section-header h2 {
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--primary-dark);
+    }
+    .section-header i.chevron { transition: transform 0.3s; color: var(--text-muted); }
+    .section-header.collapsed i.chevron { transform: rotate(-90deg); }
+    .section-body { padding: 1.5rem; }
+    .section-body.hidden { display: none; }
+    h3 { font-size: 1rem; color: var(--primary-dark); margin: 1.25rem 0 0.75rem; }
+    h3:first-child { margin-top: 0; }
+    p { margin-bottom: 0.75rem; }
+    ul, ol { margin: 0.5rem 0 1rem 1.25rem; }
+    li { margin-bottom: 0.35rem; }
+    .concept-box {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+    }
+    .concept-box strong { color: #0369a1; }
+    .project-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 0.75rem 0;
+    }
+    .project-box strong { color: #15803d; }
+    .flow-diagram {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin: 1.5rem 0;
+      padding: 1.5rem;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+    }
+    .flow-box {
+      background: var(--surface);
+      border: 2px solid var(--primary);
+      color: var(--primary-dark);
+      padding: 0.6rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-align: center;
+      min-width: 200px;
+    }
+    .flow-arrow {
+      color: var(--primary);
+      font-size: 1.25rem;
+      line-height: 1;
+      padding: 0.15rem 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+    }
+    th, td {
+      padding: 0.65rem 0.85rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: #f1f5f9;
+      font-weight: 600;
+      color: var(--primary-dark);
+      position: sticky;
+      top: 0;
+    }
+    tr:hover td { background: #f8fafc; }
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: monospace;
+    }
+    .badge-get { background: #dbeafe; color: #1d4ed8; }
+    .badge-post { background: #dcfce7; color: #15803d; }
+    .badge-patch { background: #fef3c7; color: #b45309; }
+    .badge-delete { background: #fee2e2; color: #b91c1c; }
+    .folder-tree {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1.25rem;
+      border-radius: 8px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+    .folder-tree .dir { color: #7dd3fc; }
+    .folder-tree .file { color: #a5b4fc; }
+    .summary-list li { margin-bottom: 0.5rem; }
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .tech-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .tech-card i { font-size: 1.5rem; color: var(--primary); margin-bottom: 0.5rem; }
+    .tech-card strong { display: block; font-size: 0.85rem; }
+    .tech-card span { font-size: 0.8rem; color: var(--text-muted); }
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; padding: 1.5rem 1rem; }
+      .menu-toggle { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><i class="fas fa-bars"></i></button>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1><i class="fas fa-graduation-cap"></i> Training Portal</h1>
+      <p>Developer Onboarding Guide</p>
+    </div>
+    <ul class="nav-list">
+      <li><a href="#intro"><i class="fas fa-home"></i> 1. Introduction</a></li>
+      <li><a href="#structure"><i class="fas fa-folder-tree"></i> 2. Folder Structure</a></li>
+      <li><a href="#backend"><i class="fas fa-server"></i> 3. Backend Explanation</a></li>
+      <li><a href="#backend-flow"><i class="fas fa-arrows-turn-to-dots"></i> 4. Backend Workflow</a></li>
+      <li><a href="#controllers"><i class="fas fa-plug"></i> 5. Controllers</a></li>
+      <li><a href="#services"><i class="fas fa-cogs"></i> 6. Services</a></li>
+      <li><a href="#repositories"><i class="fas fa-database"></i> 7. Repositories</a></li>
+      <li><a href="#entities"><i class="fas fa-cube"></i> 8. Entities</a></li>
+      <li><a href="#dtos"><i class="fas fa-exchange-alt"></i> 9. DTOs</a></li>
+      <li><a href="#frontend"><i class="fas fa-desktop"></i> 10. Frontend Explanation</a></li>
+      <li><a href="#frontend-flow"><i class="fas fa-route"></i> 11. Frontend Workflow</a></li>
+      <li><a href="#api"><i class="fas fa-code"></i> 12. API Documentation</a></li>
+      <li><a href="#database"><i class="fas fa-table"></i> 13. Database</a></li>
+      <li><a href="#e2e"><i class="fas fa-project-diagram"></i> 14. End-to-End Workflow</a></li>
+      <li><a href="#deployment"><i class="fas fa-cloud"></i> 15. Deployment</a></li>
+      <li><a href="#summary"><i class="fas fa-lightbulb"></i> 16. Learning Summary</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="hero">
+      <h2>Training Management Portal</h2>
+      <p>A full-stack guide for new developers — from architecture to daily workflows.</p>
+    </div>
+
+    <!-- SECTION 1 -->
+    <section id="intro">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-home"></i> 1. Introduction</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <h3>What the Project Does</h3>
+        <p>The Training Management Portal is a corporate web application that helps organizations manage employee training. Administrators can maintain employee and trainer records, define courses and training programs, schedule sessions, enroll employees, and track attendance.</p>
+
+        <h3>Purpose of the Application</h3>
+        <p>It centralizes training operations in one place instead of spreadsheets or email. The goal is to streamline professional development: who is trained, what programs exist, who attends sessions, and whether they were present.</p>
+
+        <h3>Technologies Used</h3>
+        <div class="tech-grid">
+          <div class="tech-card"><i class="fab fa-java"></i><strong>Java 21</strong><span>Backend language</span></div>
+          <div class="tech-card"><i class="fas fa-leaf"></i><strong>Spring Boot 3.3</strong><span>Backend framework</span></div>
+          <div class="tech-card"><i class="fas fa-database"></i><strong>PostgreSQL 16</strong><span>Database</span></div>
+          <div class="tech-card"><i class="fas fa-link"></i><strong>Spring Data JDBC</strong><span>Data access</span></div>
+          <div class="tech-card"><i class="fas fa-shield-alt"></i><strong>JWT Security</strong><span>Authentication</span></div>
+          <div class="tech-card"><i class="fab fa-react"></i><strong>React 18 + TS</strong><span>Frontend</span></div>
+          <div class="tech-card"><i class="fas fa-bolt"></i><strong>Vite 8</strong><span>Frontend build</span></div>
+          <div class="tech-card"><i class="fas fa-palette"></i><strong>Material-UI 5</strong><span>UI components</span></div>
+          <div class="tech-card"><i class="fas fa-sync"></i><strong>React Query</strong><span>Server state</span></div>
+          <div class="tech-card"><i class="fas fa-ship"></i><strong>Docker Compose</strong><span>PostgreSQL container</span></div>
+        </div>
+
+        <h3>High-Level Architecture</h3>
+        <div class="flow-diagram">
+          <div class="flow-box">User (Browser)</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">React Frontend (Vite + MUI)</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">Spring Boot Backend (REST API)</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">PostgreSQL Database</div>
+        </div>
+        <p>The frontend calls the backend over HTTP. The backend validates requests, applies business rules, and reads/writes data through Spring Data JDBC repositories. JWT tokens secure all API calls except login.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 2 -->
+    <section id="structure">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-folder-tree"></i> 2. Project Folder Structure</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <p>The repository has two main applications: <code>backend/</code> (Spring Boot) and <code>frontend/</code> (React).</p>
+       <pre class="folder-tree">
+training-management-portal/
+│
+├── backend/                          # Spring Boot API
+│   ├── config/                       # App, DB, Security, OpenAPI
+│   ├── controller/                   # REST Endpoints
+│   ├── handler/                      # Orchestration Layer
+│   ├── service/                      # Business Logic
+│   ├── service/impl/                 # Service Implementations
+│   ├── repository/                   # Database Access
+│   ├── model/                        # Entity Classes
+│   ├── dto/                          # Request/Response Objects
+│   ├── mapper/                       # MapStruct Converters
+│   ├── validation/                   # Custom Validation Rules
+│   ├── exception/                    # Error Handling
+│   │
+│   └── resources/
+│       ├── application.properties
+│       └── db/changelog/             # Liquibase Migrations
+│
+├── frontend/                         # React SPA
+│   ├── components/                   # Reusable UI Components
+│   ├── pages/                        # Full Page Views
+│   ├── layouts/                      # Sidebar/Navbar Layout
+│   ├── services/                     # Axios API Calls
+│   ├── context/                      # Authentication State
+│   ├── routes/                       # Route Guards
+│   └── types/                        # TypeScript Interfaces
+│
+└── docker-compose.yml                # PostgreSQL Container
+</pre>
+        <table>
+          <tr><th>Folder</th><th>Responsibility</th></tr>
+          <tr><td><code>backend/controller</code></td><td>Defines REST URLs and HTTP methods; receives requests and returns JSON.</td></tr>
+          <tr><td><code>backend/handler</code></td><td>Coordinates validation, mapping, and service calls for each feature.</td></tr>
+          <tr><td><code>backend/service</code></td><td>Core business operations and transactions.</td></tr>
+          <tr><td><code>backend/repository</code></td><td>Database queries via Spring Data JDBC.</td></tr>
+          <tr><td><code>backend/model</code></td><td>Classes that map to database tables.</td></tr>
+          <tr><td><code>frontend/pages</code></td><td>Screen-level React components (Employees, Courses, etc.).</td></tr>
+          <tr><td><code>frontend/services</code></td><td>Axios wrappers that call backend APIs.</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 3 -->
+    <section id="backend">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-server"></i> 3. Backend Explanation</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <h3>What is Spring Boot?</h3>
+        <div class="concept-box"><strong>Concept:</strong> Spring Boot is a Java framework that builds production-ready web applications quickly. It auto-configures servers, databases, and security so you focus on business code.</div>
+        <div class="project-box"><strong>In this project:</strong> <code>TrainingManagementPortalApplication.java</code> is the entry point. It starts the embedded Tomcat server and loads all Spring components.</div>
+
+        <h3>What is a REST API?</h3>
+        <div class="concept-box"><strong>Concept:</strong> A REST API exposes data and actions over HTTP using URLs and methods (GET, POST, PATCH, DELETE). Clients send JSON and receive JSON responses.</div>
+        <div class="project-box"><strong>In this project:</strong> All APIs live under <code>/api/v1/</code> (e.g. <code>GET /api/v1/employees</code>).</div>
+
+        <h3>What is a Controller?</h3>
+        <div class="concept-box"><strong>Concept:</strong> A Controller is the front door of the API. It maps URLs to methods and returns HTTP responses.</div>
+        <div class="project-box"><strong>In this project:</strong> <code>EmployeeController</code>, <code>CourseController</code>, <code>AuthController</code>, and others. Each uses <code>@RestController</code> and <code>@RequestMapping</code>.</div>
+
+        <h3>What is a Service?</h3>
+        <div class="concept-box"><strong>Concept:</strong> Services hold business logic and database transactions. Controllers should not query the database directly.</div>
+        <div class="project-box"><strong>In this project:</strong> <code>EmployeeServiceImpl</code> handles save, find, and soft-delete. Interfaces like <code>EmployeeService</code> define the contract.</div>
+
+        <h3>What is a Repository?</h3>
+        <div class="concept-box"><strong>Concept:</strong> Repositories are the data-access layer. You define an interface; Spring generates query implementations.</div>
+        <div class="project-box"><strong>In this project:</strong> <code>EmployeeRepository</code> extends <code>CrudRepository</code> with methods like <code>findByIdAndDeletedFalse</code>.</div>
+
+        <h3>What is an Entity?</h3>
+        <div class="concept-box"><strong>Concept:</strong> An Entity (model) is a Java class that represents a database table row.</div>
+        <div class="project-box"><strong>In this project:</strong> <code>Employee</code>, <code>Course</code>, <code>Enrollment</code> in the <code>model</code> package use <code>@Table</code> from Spring Data JDBC.</div>
+
+        <h3>What is a DTO?</h3>
+        <div class="concept-box"><strong>Concept:</strong> A Data Transfer Object carries data between client and server. It exposes only the fields the API should show or accept.</div>
+        <div class="project-box"><strong>In this project:</strong> <code>EmployeeCreateRequest</code> (input) and <code>EmployeeResponse</code> (output) in <code>dto/request</code> and <code>dto/response</code>.</div>
+
+        <h3>What is application.properties?</h3>
+        <div class="concept-box"><strong>Concept:</strong> Configuration file for database URLs, JWT settings, logging, and profile-specific overrides.</div>
+        <div class="project-box"><strong>In this project:</strong> <code>application.properties</code> sets JWT secret, Liquibase path, and default profile <code>local</code>. <code>application-local.properties</code> sets PostgreSQL connection details.</div>
+
+        <h3>Dependency Injection in This Project</h3>
+        <div class="concept-box"><strong>Concept:</strong> Spring creates objects and injects them where needed. You declare dependencies via constructor parameters instead of calling <code>new</code>.</div>
+        <div class="project-box"><strong>In this project:</strong> <code>@RequiredArgsConstructor</code> (Lombok) + <code>private final EmployeeHandler employeeHandler</code> in controllers. Spring wires Handler → Service → Repository automatically.</div>
+
+        <p><strong>Note:</strong> This project also uses a <strong>Handler</strong> layer between Controller and Service. Handlers orchestrate validation, mapping, and enrichment before calling services.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 4 -->
+    <section id="backend-flow">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-arrows-turn-to-dots"></i> 4. Backend Request Workflow</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <p>When a client creates an employee, the request flows through these layers:</p>
+        <div class="flow-diagram">
+          <div class="flow-box">Client (React + Axios)</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">EmployeeController</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">EmployeeHandler</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">EmployeeServiceImpl</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">EmployeeRepository</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">PostgreSQL (employee table)</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">EmployeeResponse (JSON back to client)</div>
+        </div>
+        <ul>
+          <li><strong>Controller</strong> receives <code>EmployeeCreateRequest</code> JSON.</li>
+          <li><strong>Handler</strong> validates email uniqueness, maps DTO to <code>Employee</code> entity.</li>
+          <li><strong>Service</strong> runs the save inside a transaction.</li>
+          <li><strong>Repository</strong> executes INSERT via Spring Data JDBC.</li>
+          <li><strong>Mapper</strong> converts saved entity to <code>EmployeeResponse</code>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 5 -->
+    <section id="controllers">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-plug"></i> 5. Controllers</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <p>Each controller delegates to a Handler (except <code>AuthController</code>, which uses <code>JwtUtils</code> directly).</p>
+
+        <h3>AuthController</h3>
+        <p><strong>Purpose:</strong> User login and JWT token issuance.<br>
+        <strong>Base URL:</strong> <code>/api/v1/auth</code><br>
+        <strong>Endpoints:</strong> <code>POST /login</code><br>
+        <strong>Returns:</strong> <code>AuthResponse</code> with JWT token.</p>
+
+        <h3>EmployeeController</h3>
+        <p><strong>Purpose:</strong> Manage employees.<br>
+        <strong>Base URL:</strong> <code>/api/v1/employees</code><br>
+        <strong>Handler:</strong> <code>EmployeeHandler</code><br>
+        <strong>Endpoints:</strong> POST, GET /{id}, GET (paginated), PATCH /{id}, PATCH /{id}/activate, PATCH /{id}/deactivate, DELETE /{id}<br>
+        <strong>Returns:</strong> <code>EmployeeResponse</code> or <code>PageResponse&lt;EmployeeResponse&gt;</code></p>
+
+        <h3>TrainerController</h3>
+        <p><strong>Purpose:</strong> Manage trainers and their specializations.<br>
+        <strong>Base URL:</strong> <code>/api/v1/trainers</code><br>
+        <strong>Handler:</strong> <code>TrainerHandler</code><br>
+        <strong>Returns:</strong> <code>TrainerResponse</code> or paginated list.</p>
+
+        <h3>CourseController</h3>
+        <p><strong>Purpose:</strong> Manage course catalog.<br>
+        <strong>Base URL:</strong> <code>/api/v1/courses</code><br>
+        <strong>Handler:</strong> <code>CourseHandler</code><br>
+        <strong>Returns:</strong> <code>CourseResponse</code> or paginated list.</p>
+
+        <h3>TrainingProgramController</h3>
+        <p><strong>Purpose:</strong> Manage training programs linking trainers and courses.<br>
+        <strong>Base URL:</strong> <code>/api/v1/training-programs</code><br>
+        <strong>Handler:</strong> <code>TrainingProgramHandler</code><br>
+        <strong>Returns:</strong> <code>TrainingProgramResponse</code> or paginated list.</p>
+
+        <h3>TrainingSessionController</h3>
+        <p><strong>Purpose:</strong> Manage sessions within programs.<br>
+        <strong>Base URL:</strong> <code>/api/v1/training-sessions</code><br>
+        <strong>Handler:</strong> <code>TrainingSessionHandler</code><br>
+        <strong>Returns:</strong> <code>TrainingSessionResponse</code> or paginated list.</p>
+
+        <h3>EnrollmentController</h3>
+        <p><strong>Purpose:</strong> Enroll employees in training sessions.<br>
+        <strong>Base URL:</strong> <code>/api/v1/enrollments</code><br>
+        <strong>Handler:</strong> <code>EnrollmentHandler</code><br>
+        <strong>Returns:</strong> <code>EnrollmentResponse</code> (enriched with employee and program names).</p>
+
+        <h3>AttendanceController</h3>
+        <p><strong>Purpose:</strong> Record session attendance.<br>
+        <strong>Base URL:</strong> <code>/api/v1/attendances</code><br>
+        <strong>Handler:</strong> <code>AttendanceHandler</code><br>
+        <strong>Returns:</strong> <code>AttendanceResponse</code> or paginated list.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 6 -->
+    <section id="services">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-cogs"></i> 6. Services</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <p>Services sit between Handlers and Repositories. They enforce transactions and centralize data operations. Business rules like email validation live in Handlers and <code>validation</code> services; Services focus on persistence.</p>
+        <table>
+          <tr><th>Service</th><th>Repository</th><th>Responsibilities</th></tr>
+          <tr><td><code>EmployeeServiceImpl</code></td><td><code>EmployeeRepository</code></td><td>Save, find by ID, paginated list, soft delete (sets <code>deleted=true</code>).</td></tr>
+          <tr><td><code>TrainerServiceImpl</code></td><td><code>TrainerRepository</code></td><td>Same CRUD pattern for trainers.</td></tr>
+          <tr><td><code>CourseServiceImpl</code></td><td><code>CourseRepository</code></td><td>Course persistence and soft delete.</td></tr>
+          <tr><td><code>TrainingProgramServiceImpl</code></td><td><code>TrainingProgramRepository</code></td><td>Program persistence with trainer/course references.</td></tr>
+          <tr><td><code>TrainingSessionServiceImpl</code></td><td><code>TrainingSessionRepository</code></td><td>Session persistence linked to programs.</td></tr>
+          <tr><td><code>EnrollmentServiceImpl</code></td><td><code>EnrollmentRepository</code></td><td>Enrollment save, find, list, soft delete.</td></tr>
+          <tr><td><code>AttendanceServiceImpl</code></td><td><code>AttendanceRepository</code></td><td>Attendance record persistence.</td></tr>
+        </table>
+        <p>All service implementations use <code>@Transactional</code> for write operations and <code>@Transactional(readOnly = true)</code> for reads.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 7 -->
+    <section id="repositories">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-database"></i> 7. Repositories</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <h3>Spring Data (JDBC in This Project)</h3>
+        <p>This project uses <strong>Spring Data JDBC</strong> (not JPA). The repository pattern is the same: interfaces extend <code>CrudRepository</code> and Spring generates implementations. There are no JPA relationship annotations; foreign keys are stored as UUID columns.</p>
+        <p>Repositories handle SQL operations without writing JDBC code manually. Custom query methods follow naming conventions (e.g. <code>findAllByDeletedFalse</code>).</p>
+        <table>
+          <tr><th>Repository</th><th>Entity Managed</th><th>Table</th></tr>
+          <tr><td><code>EmployeeRepository</code></td><td><code>Employee</code></td><td><code>employee</code></td></tr>
+          <tr><td><code>TrainerRepository</code></td><td><code>Trainer</code></td><td><code>trainer</code></td></tr>
+          <tr><td><code>CourseRepository</code></td><td><code>Course</code></td><td><code>course</code></td></tr>
+          <tr><td><code>TrainingProgramRepository</code></td><td><code>TrainingProgram</code></td><td><code>training_program</code></td></tr>
+          <tr><td><code>TrainingSessionRepository</code></td><td><code>TrainingSession</code></td><td><code>training_session</code></td></tr>
+          <tr><td><code>EnrollmentRepository</code></td><td><code>Enrollment</code></td><td><code>enrollment</code></td></tr>
+          <tr><td><code>AttendanceRepository</code></td><td><code>Attendance</code></td><td><code>attendance</code></td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 8 -->
+    <section id="entities">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-cube"></i> 8. Entities</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <p>All entities use UUID primary keys, audit fields (<code>createdAt</code>, <code>updatedAt</code>, <code>createdBy</code>, <code>updatedBy</code>), and a <code>deleted</code> flag for soft deletes. Relationships are stored as UUID foreign key columns (not JPA @ManyToOne).</p>
+
+        <h3>Employee</h3>
+        <p><strong>Table:</strong> <code>employee</code><br>
+        <strong>Fields:</strong> firstName, lastName, email, department, isActive<br>
+        <strong>Relationships:</strong> Referenced by Enrollment via <code>employee_id</code>.</p>
+
+        <h3>Trainer</h3>
+        <p><strong>Table:</strong> <code>trainer</code><br>
+        <strong>Fields:</strong> firstName, lastName, email, specialization, isActive<br>
+        <strong>Relationships:</strong> Referenced by TrainingProgram via <code>trainer_id</code>.</p>
+
+        <h3>Course</h3>
+        <p><strong>Table:</strong> <code>course</code><br>
+        <strong>Fields:</strong> title, description, startDate, endDate, status (DRAFT, PUBLISHED, ARCHIVED)<br>
+        <strong>Relationships:</strong> Referenced by TrainingProgram via <code>course_id</code>.</p>
+
+        <h3>TrainingProgram</h3>
+        <p><strong>Table:</strong> <code>training_program</code><br>
+        <strong>Fields:</strong> title, description, startDate, endDate, status, maxParticipants, trainerId, courseId<br>
+        <strong>Relationships:</strong> Many programs → one Trainer (trainerId); many programs → one Course (courseId). One program → many Sessions.</p>
+
+        <h3>TrainingSession</h3>
+        <p><strong>Table:</strong> <code>training_session</code><br>
+        <strong>Fields:</strong> title, description, startDate, endDate, location, capacity, trainingProgramId<br>
+        <strong>Relationships:</strong> Many sessions → one TrainingProgram. Referenced by Enrollment.</p>
+
+        <h3>Enrollment</h3>
+        <p><strong>Table:</strong> <code>enrollment</code><br>
+        <strong>Fields:</strong> employeeId, trainingSessionId, enrolledAt<br>
+        <strong>Relationships:</strong> Links Employee to TrainingSession. Referenced by Attendance.</p>
+
+        <h3>Attendance</h3>
+        <p><strong>Table:</strong> <code>attendance</code><br>
+        <strong>Fields:</strong> enrollmentId, attendedAt, present<br>
+        <strong>Relationships:</strong> Many attendance records → one Enrollment.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 9 -->
+    <section id="dtos">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-exchange-alt"></i> 9. DTOs</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <h3>Why DTOs Are Used</h3>
+        <ul>
+          <li>Hide internal fields (e.g. <code>deleted</code>, <code>newEntity</code>) from API clients.</li>
+          <li>Validate input separately from database models.</li>
+          <li>Return enriched data (e.g. EnrollmentResponse includes employee name).</li>
+        </ul>
+        <h3>DTO vs Entity</h3>
+        <table>
+          <tr><th>Entity</th><th>DTO</th></tr>
+          <tr><td>Maps to database table</td><td>Maps to API request/response</td></tr>
+          <tr><td>Has audit and soft-delete fields</td><td>Exposes only business fields</td></tr>
+          <tr><td>Used inside services/repositories</td><td>Used at API boundary</td></tr>
+        </table>
+        <h3>Request DTOs (examples)</h3>
+        <p><code>EmployeeCreateRequest</code>, <code>CourseCreateRequest</code>, <code>EnrollmentCreateRequest</code>, <code>AuthRequest</code> — sent from client to server.</p>
+        <h3>Response DTOs (examples)</h3>
+        <p><code>EmployeeResponse</code>, <code>CourseResponse</code>, <code>EnrollmentResponse</code>, <code>PageResponse</code>, <code>AuthResponse</code> — returned to client.</p>
+        <p>MapStruct mappers in <code>mapper/</code> convert between DTOs and entities.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 10 -->
+    <section id="frontend">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-desktop"></i> 10. Frontend Explanation</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <h3>React Project Structure</h3>
+        <p>The frontend is a Single Page Application (SPA) built with Vite. Entry point: <code>main.tsx</code> → <code>App.tsx</code>. Source lives in <code>frontend/src/</code>.</p>
+
+        <h3>Components</h3>
+        <p>Reusable UI pieces in <code>components/</code>: <code>DashboardCard</code>, <code>PageHeader</code>. Pages compose these with MUI components (Tables, Dialogs, Buttons).</p>
+
+        <h3>Pages</h3>
+        <p>Full screens in <code>pages/</code>: Dashboard, Employees, Trainers, Courses, Training Programs, Sessions, Enrollments, Attendance, Assignments, Login, Profile, error pages.</p>
+
+        <h3>Routing</h3>
+        <p>React Router in <code>App.tsx</code>. Public route: <code>/login</code>. Protected routes wrap <code>Layout</code> via <code>PrivateRoute</code>, which redirects unauthenticated users to login.</p>
+
+        <h3>API Service Layer</h3>
+        <p><code>services/api.ts</code> creates an Axios instance with base URL <code>http://localhost:8080/api/v1</code>. It attaches JWT from localStorage and redirects on 401. Feature services (<code>employeeService.ts</code>, etc.) call this client.</p>
+
+        <h3>State Management</h3>
+        <ul>
+          <li><strong>AuthContext</strong> — token, login/logout, <code>isAuthenticated</code>.</li>
+          <li><strong>TanStack React Query</strong> — server data fetching, caching, mutations (used on list pages).</li>
+          <li><strong>Local useState</strong> — form fields, dialogs, pagination on individual pages.</li>
+        </ul>
+
+        <h3>Forms</h3>
+        <p>Login uses React Hook Form + Yup validation. CRUD pages (e.g. Employees) use MUI TextField with local state and submit via React Query mutations.</p>
+
+        <h3>API Calls</h3>
+        <p>Pages call service modules → Axios → Spring Boot. Example: <code>EmployeesPage</code> uses <code>useQuery</code> with <code>employeeService.getEmployees()</code>.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 11 -->
+    <section id="frontend-flow">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-route"></i> 11. Frontend Workflow</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <p>Example: user creates a new employee on the Employees page.</p>
+        <div class="flow-diagram">
+          <div class="flow-box">User Clicks "Add Employee"</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">EmployeesPage (React Component)</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">employeeService.createEmployee()</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">api.ts (Axios + JWT header)</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">POST /api/v1/employees</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">Spring Boot → PostgreSQL</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">EmployeeResponse JSON</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">React Query invalidates cache → Table refreshes</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 12 -->
+    <section id="api">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-code"></i> 12. API Documentation</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <p>All endpoints require JWT authentication except <code>POST /api/v1/auth/login</code>. Swagger UI is available at <code>/swagger-ui.html</code> when the backend runs.</p>
+        <table>
+          <tr><th>Method</th><th>Endpoint</th><th>Controller</th><th>Purpose</th></tr>
+          <tr><td><span class="badge badge-post">POST</span></td><td>/api/v1/auth/login</td><td>AuthController</td><td>Authenticate and receive JWT</td></tr>
+          <tr><td><span class="badge badge-post">POST</span></td><td>/api/v1/employees</td><td>EmployeeController</td><td>Create employee</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td>/api/v1/employees/{id}</td><td>EmployeeController</td><td>Get employee by ID</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td>/api/v1/employees</td><td>EmployeeController</td><td>List employees (paginated)</td></tr>
+          <tr><td><span class="badge badge-patch">PATCH</span></td><td>/api/v1/employees/{id}</td><td>EmployeeController</td><td>Update employee</td></tr>
+          <tr><td><span class="badge badge-patch">PATCH</span></td><td>/api/v1/employees/{id}/activate</td><td>EmployeeController</td><td>Activate employee</td></tr>
+          <tr><td><span class="badge badge-patch">PATCH</span></td><td>/api/v1/employees/{id}/deactivate</td><td>EmployeeController</td><td>Deactivate employee</td></tr>
+          <tr><td><span class="badge badge-delete">DELETE</span></td><td>/api/v1/employees/{id}</td><td>EmployeeController</td><td>Soft delete employee</td></tr>
+          <tr><td><span class="badge badge-post">POST</span></td><td>/api/v1/trainers</td><td>TrainerController</td><td>Create trainer</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td>/api/v1/trainers/{id}</td><td>TrainerController</td><td>Get trainer by ID</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td>/api/v1/trainers</td><td>TrainerController</td><td>List trainers (paginated)</td></tr>
+          <tr><td><span class="badge badge-patch">PATCH</span></td><td>/api/v1/trainers/{id}</td><td>TrainerController</td><td>Update trainer</td></tr>
+          <tr><td><span class="badge badge-patch">PATCH</span></td><td>/api/v1/trainers/{id}/activate</td><td>TrainerController</td><td>Activate trainer</td></tr>
+          <tr><td><span class="badge badge-patch">PATCH</span></td><td>/api/v1/trainers/{id}/deactivate</td><td>TrainerController</td><td>Deactivate trainer</td></tr>
+          <tr><td><span class="badge badge-delete">DELETE</span></td><td>/api/v1/trainers/{id}</td><td>TrainerController</td><td>Soft delete trainer</td></tr>
+          <tr><td><span class="badge badge-post">POST</span></td><td>/api/v1/courses</td><td>CourseController</td><td>Create course</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td>/api/v1/courses/{id}</td><td>CourseController</td><td>Get course by ID</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td>/api/v1/courses</td><td>CourseController</td><td>List courses (paginated)</td></tr>
+          <tr><td><span class="badge badge-patch">PATCH</span></td><td>/api/v1/courses/{id}</td><td>CourseController</td><td>Update course</td></tr>
+          <tr><td><span class="badge badge-delete">DELETE</span></td><td>/api/v1/courses/{id}</td><td>CourseController</td><td>Soft delete course</td></tr>
+          <tr><td><span class="badge badge-post">POST</span></td><td>/api/v1/training-programs</td><td>TrainingProgramController</td><td>Create training program</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td>/api/v1/training-programs/{id}</td><td>TrainingProgramController</td><td>Get program by ID</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td>/api/v1/training-programs</td><td>TrainingProgramController</td><td>List programs (paginated)</td></tr>
+          <tr><td><span class="badge badge-patch">PATCH</span></td><td>/api/v1/training-programs/{id}</td><td>TrainingProgramController</td><td>Update program</td></tr>
+          <tr><td><span class="badge badge-delete">DELETE</span></td><td>/api/v1/training-programs/{id}</td><td>TrainingProgramController</td><td>Soft delete program</td></tr>
+          <tr><td><span class="badge badge-post">POST</span></td><td>/api/v1/training-sessions</td><td>TrainingSessionController</td><td>Create session</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td>/api/v1/training-sessions/{id}</td><td>TrainingSessionController</td><td>Get session by ID</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td>/api/v1/training-sessions</td><td>TrainingSessionController</td><td>List sessions (paginated)</td></tr>
+          <tr><td><span class="badge badge-patch">PATCH</span></td><td>/api/v1/training-sessions/{id}</td><td>TrainingSessionController</td><td>Update session</td></tr>
+          <tr><td><span class="badge badge-delete">DELETE</span></td><td>/api/v1/training-sessions/{id}</td><td>TrainingSessionController</td><td>Soft delete session</td></tr>
+          <tr><td><span class="badge badge-post">POST</span></td><td>/api/v1/enrollments</td><td>EnrollmentController</td><td>Create enrollment</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td>/api/v1/enrollments/{id}</td><td>EnrollmentController</td><td>Get enrollment by ID</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td>/api/v1/enrollments</td><td>EnrollmentController</td><td>List enrollments (paginated)</td></tr>
+          <tr><td><span class="badge badge-patch">PATCH</span></td><td>/api/v1/enrollments/{id}</td><td>EnrollmentController</td><td>Update enrollment</td></tr>
+          <tr><td><span class="badge badge-delete">DELETE</span></td><td>/api/v1/enrollments/{id}</td><td>EnrollmentController</td><td>Soft delete enrollment</td></tr>
+          <tr><td><span class="badge badge-post">POST</span></td><td>/api/v1/attendances</td><td>AttendanceController</td><td>Create attendance record</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td>/api/v1/attendances/{id}</td><td>AttendanceController</td><td>Get attendance by ID</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td>/api/v1/attendances</td><td>AttendanceController</td><td>List attendance (paginated)</td></tr>
+          <tr><td><span class="badge badge-patch">PATCH</span></td><td>/api/v1/attendances/{id}</td><td>AttendanceController</td><td>Update attendance</td></tr>
+          <tr><td><span class="badge badge-delete">DELETE</span></td><td>/api/v1/attendances/{id}</td><td>AttendanceController</td><td>Soft delete attendance</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 13 -->
+    <section id="database">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-table"></i> 13. Database Documentation</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <p>Schema is managed by Liquibase migrations in <code>backend/src/main/resources/db/changelog/</code>. Database name: <code>training_portal</code>.</p>
+        <h3>Tables and Primary Keys</h3>
+        <table>
+          <tr><th>Table</th><th>Primary Key</th><th>Key Columns</th></tr>
+          <tr><td>employee</td><td>id (UUID)</td><td>first_name, last_name, email, department, is_active</td></tr>
+          <tr><td>trainer</td><td>id (UUID)</td><td>first_name, last_name, email, specialization, is_active</td></tr>
+          <tr><td>course</td><td>id (UUID)</td><td>title, description, start_date, end_date, status</td></tr>
+          <tr><td>training_program</td><td>id (UUID)</td><td>title, trainer_id, course_id, status, max_participants</td></tr>
+          <tr><td>training_session</td><td>id (UUID)</td><td>title, training_program_id, location, capacity</td></tr>
+          <tr><td>enrollment</td><td>id (UUID)</td><td>employee_id, training_session_id, enrolled_at</td></tr>
+          <tr><td>attendance</td><td>id (UUID)</td><td>enrollment_id, attended_at, present</td></tr>
+        </table>
+        <h3>Relationships (Foreign Keys)</h3>
+        <div class="flow-diagram">
+          <div class="flow-box">Course ← TrainingProgram (course_id)</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">Trainer ← TrainingProgram (trainer_id)</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">TrainingProgram ← TrainingSession (training_program_id)</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">Employee + TrainingSession → Enrollment</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">Enrollment ← Attendance (enrollment_id)</div>
+        </div>
+        <p>All tables include audit columns and a <code>deleted</code> boolean for soft deletes. Records are never physically removed by default API delete operations.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 14 -->
+    <section id="e2e">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-project-diagram"></i> 14. Complete Project Workflow</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <p>End-to-end: enrolling an employee in a training session.</p>
+        <div class="flow-diagram">
+          <div class="flow-box">1. Open browser → http://localhost:4173</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">2. LoginPage → POST /api/v1/auth/login</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">3. JWT stored in localStorage</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">4. Navigate to Enrollments or Assignments page</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">5. Select employee + training session</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">6. enrollmentService → POST /api/v1/enrollments</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">7. EnrollmentController → EnrollmentHandler</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">8. EnrollmentServiceImpl → EnrollmentRepository</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">9. Row inserted in enrollment table (PostgreSQL)</div>
+          <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+          <div class="flow-box">10. EnrollmentResponse returned → UI table updates</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 15 -->
+    <section id="deployment">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-cloud"></i> 15. Deployment</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <table>
+          <tr><th>Component</th><th>Port</th><th>Notes</th></tr>
+          <tr><td>Frontend (Vite dev server)</td><td><strong>4173</strong></td><td>Configured in <code>vite.config.ts</code> (<code>strictPort: true</code>). Proxies <code>/api</code> to backend.</td></tr>
+          <tr><td>Backend (Spring Boot)</td><td><strong>8080</strong></td><td>Default Spring Boot port. API base: <code>http://localhost:8080/api/v1</code></td></tr>
+          <tr><td>PostgreSQL</td><td><strong>5432</strong></td><td>Default from <code>.env.example</code>. Mapped via Docker Compose.</td></tr>
+        </table>
+        <h3>Docker</h3>
+        <p><code>docker-compose.yml</code> runs only PostgreSQL (image: postgres:16, container: <code>training-postgres</code>). Backend and frontend run locally outside Docker.</p>
+        <p><strong>Start database:</strong> <code>docker-compose up -d</code><br>
+        <strong>Start backend:</strong> <code>cd backend &amp;&amp; .\gradlew bootRun</code><br>
+        <strong>Start frontend:</strong> <code>cd frontend &amp;&amp; npm run dev</code></p>
+        <p>Default login: username <code>admin</code>, password <code>password</code> (from <code>application.properties</code>).</p>
+      </div>
+    </section>
+
+    <!-- SECTION 16 -->
+    <section id="summary">
+      <div class="section-header" data-toggle>
+        <h2><i class="fas fa-lightbulb"></i> 16. How This Project Works</h2>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="section-body">
+        <ol class="summary-list">
+          <li>The app manages corporate training: employees, trainers, courses, programs, sessions, enrollments, and attendance.</li>
+          <li>React frontend (Vite + MUI) provides the UI; Spring Boot backend exposes REST APIs.</li>
+          <li>PostgreSQL stores all data; Liquibase applies schema migrations on startup.</li>
+          <li>Users log in via <code>/login</code>; the backend returns a JWT stored in localStorage.</li>
+          <li>Every API call (except login) sends the JWT in the Authorization header.</li>
+          <li>Controllers receive HTTP requests and delegate to Handlers.</li>
+          <li>Handlers validate input, map DTOs to entities, and call Services.</li>
+          <li>Services run business transactions and call Repositories.</li>
+          <li>Repositories use Spring Data JDBC to read/write PostgreSQL tables.</li>
+          <li>Entities map to tables; foreign keys are UUID columns (trainer_id, course_id, etc.).</li>
+          <li>DTOs separate API contracts from database models; MapStruct converts between them.</li>
+          <li>Soft deletes set <code>deleted=true</code> instead of removing rows.</li>
+          <li>Frontend pages use React Query to fetch and cache API data.</li>
+          <li>Service modules in <code>frontend/services/</code> mirror backend endpoints.</li>
+          <li>Training flow: Course + Trainer → Program → Session → Enrollment (Employee) → Attendance.</li>
+        </ol>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    document.getElementById('menuToggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+    document.querySelectorAll('[data-toggle]').forEach(header => {
+      header.addEventListener('click', () => {
+        const body = header.nextElementSibling;
+        const collapsed = body.classList.toggle('hidden');
+        header.classList.toggle('collapsed', collapsed);
+      });
+    });
+    document.querySelectorAll('.nav-list a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('sidebar').classList.remove('open');
+      });
+    });
+  </script>
+</body>
+</html>

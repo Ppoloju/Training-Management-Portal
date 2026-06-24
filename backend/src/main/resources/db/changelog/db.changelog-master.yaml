@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - include:
+      file: changes/001-initial-empty.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/002-create-course-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/003-create-employee-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/004-create-trainer-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/005-create-training-program-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/006-create-training-session-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/007-create-enrollment-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/008-create-attendance-table.yaml
+      relativeToChangelogFile: true

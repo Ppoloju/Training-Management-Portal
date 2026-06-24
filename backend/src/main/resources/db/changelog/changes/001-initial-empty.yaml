@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-initial-empty
+      author: training-portal
+      comment: Baseline migration; no application tables yet
+      changes:
+        - tagDatabase:
+            tag: v001-initial

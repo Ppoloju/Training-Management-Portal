@@ -1,0 +1,31 @@
+# Docker Compose configuration for a local PostgreSQL container.
+# Use localhost from the host machine (Windows/Linux/macOS) when Spring Boot runs outside Docker.
+# Use the container hostname `training-postgres` from other containers on the same Docker network.
+services:
+  postgres:
+    image: postgres:16
+    container_name: training-postgres
+    hostname: training-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - training-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  training-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

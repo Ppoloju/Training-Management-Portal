@@ -1,0 +1,81 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-training-program-table
+      author: antigravity
+      changes:
+        - createTable:
+            tableName: training_program
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: start_date
+                  type: DATE
+              - column:
+                  name: end_date
+                  type: DATE
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_participants
+                  type: INTEGER
+              - column:
+                  name: trainer_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: course_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: VARCHAR(255)
+              - column:
+                  name: updated_by
+                  type: VARCHAR(255)
+              - column:
+                  name: deleted
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: training_program
+            baseColumnNames: trainer_id
+            referencedTableName: trainer
+            referencedColumnNames: id
+            constraintName: fk_training_program_trainer
+        - addForeignKeyConstraint:
+            baseTableName: training_program
+            baseColumnNames: course_id
+            referencedTableName: course
+            referencedColumnNames: id
+            constraintName: fk_training_program_course

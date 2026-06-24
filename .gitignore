@@ -1,0 +1,99 @@
+# =========================
+# IntelliJ IDEA
+# =========================
+.idea/
+*.iml
+out/
+
+# =========================
+# VS Code
+# =========================
+.vscode/
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Java / Gradle
+# =========================
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Log files
+*.log
+
+# =========================
+# Spring Boot
+# =========================
+target/
+logs/
+
+# Application secrets
+application-local.properties
+application-dev.properties
+application-prod.properties
+
+# Environment variables
+.env
+.env.*
+
+# =========================
+# Node.js / React
+# =========================
+node_modules/
+dist/
+coverage/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Vite
+# =========================
+.vite/
+
+# =========================
+# TypeScript
+# =========================
+*.tsbuildinfo
+
+# =========================
+# Docker
+# =========================
+docker-data/
+postgres-data/
+
+# =========================
+# Temporary Files
+# =========================
+*.tmp
+*.temp
+*.swp
+
+# =========================
+# Archives
+# =========================
+*.zip
+*.tar
+*.gz
+*.rar
+
+# =========================
+# Generated Reports
+# =========================
+reports/
+test-results/
+
+# =========================
+# Security
+# =========================
+*.key
+*.pem
+*.crt
+*.jks
+*.p12

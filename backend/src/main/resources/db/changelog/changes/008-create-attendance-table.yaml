@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-create-attendance-table
+      author: antigravity
+      changes:
+        - createTable:
+            tableName: attendance
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: enrollment_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: attended_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: present
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: VARCHAR(255)
+              - column:
+                  name: updated_by
+                  type: VARCHAR(255)
+              - column:
+                  name: deleted
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: attendance
+            baseColumnNames: enrollment_id
+            referencedTableName: enrollment
+            referencedColumnNames: id
+            constraintName: fk_attendance_enrollment
