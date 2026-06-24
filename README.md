@@ -236,7 +236,7 @@ The frontend will start at `http://localhost:5173`
 
 ### Running Tests
 
-#### Backend Tests
+#### Backend Tests(no test available)
 ```bash
 cd backend
 .\gradlew test
@@ -290,19 +290,33 @@ The application uses profile-based configuration:
 This project is fully functional for training management. The following enhancements can make it more scalable and user-friendly.
 
 • Role-based access (Admin, Trainer, Employee)
+
 • Email notifications for enrollments and training schedules
+
 • Attendance reports with PDF/Excel export
+
 • Training completion certificates
+
 • Search, filter, and pagination for all modules
+
 • Dashboard analytics with charts
+
 • Employee profile management
+
 • Training calendar integration
+
 • Audit logs for data changes
+
 • File upload for training materials
+
 • Password reset and email verification
+
 • Soft delete instead of permanent delete
+
 • Unit and integration testing
+
 • API documentation using Swagger
+
 • Deployment to cloud (AWS/Azure)
 
 ## Security
